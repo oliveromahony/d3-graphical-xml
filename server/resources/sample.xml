@@ -1,0 +1,449 @@
+<plan xmlns="http://iemfsa.tivoli.ibm.com/AutomationPlanAction" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" source-plan-id="undefined" prefetch="false" pending-restart="PausePlan" source-plan-site-url="undefined">
+	<plan-steps>
+		<step id="1">
+			<fixlet fixlet-id="1" site-url="http://sync.bigfix.com/cgi-bin/bfgather/windowsremotedesktop" name="Disable%20Remote%20Desktop%20-%20Windows%20XP%20%2F%202003%20%2F%20Vista%20%2F%202008%20%2F%20Windows%207" action-name="Action1" modification-time="Wed, 21 Sep 2011 18:19:06 +0000">
+				<relevance><![CDATA[((if( name of operating system starts with "Win" ) then platform id of operating system != 3  AND (if exists property "in proxy agent context" then (not in proxy agent context) else true) else false) AND ((it = "WinXP" OR it = "Win2003" OR it = "WinXP-2003" OR it = "WinVista" OR it = "Win2008" OR (it = "Win2008R2" AND version of client >= "7.2.5.22") OR (it = "Win7" AND version of client >= "7.2.4.60")) of name of operating system)) AND (NOT (exists key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" whose (exists value "fDenyTSConnections" whose (it != 0) of it) of registry))]]></relevance>
+				<action-script mime-type="application/x-Fixlet-Windows-Shell"><![CDATA[regset "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server]" "fDenyTSConnections"=dword:00000001]]></action-script>
+				<success type="RunToCompletion"/>
+				<mime-fields>
+					<mime-field name="x-fixlet-first-propagation"><![CDATA[Tue, 17 Jan 2006 04:36:39 +0000]]></mime-field>
+				</mime-fields>
+			</fixlet>
+		</step>
+		<step id="2">
+			<fixlet fixlet-id="1" site-url="http://testsite.bigfix.com/cgi-bin/bfgather/serverautomationbuild" name="Install%20Latest%20Automation%20Plan%20Engine" action-name="Action1" modification-time="Tue, 02 Oct 2012 13:00:00 +0000">
+				<relevance><![CDATA[(((((((((if exists property "in proxy agent context" then ( not in proxy agent context ) else true )) AND (exists root server)) AND (name of operating system contains "Win")) AND (if (not exists folder (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications\PlanEngine"))  		    then true 		else if ( exists folder (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications\PlanEngine") ) 		then  		( 			( 			exists file (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\" of registry as string & "Applications\PlanEngine\config\metadata.xml")  			and ((node value of xpath "/pe.metadata/property[@name='pe.build.version']/text()" of xml document of file (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\" of registry as string & "Applications\PlanEngine\config\met
+adata.xml") as version)  			< ("9.1.132" as version)) 			) 		  OR 			(  			  (version of main gather service >= "9.0")  			   AND 			  ( exists  (xpath "/config/property[@name='rest.api.enabled']/text()" of xml document of file (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\" of registry as string & "Applications\PlanEngine\config\config.xml"))  			    whose ( node value of it  = "false" ) 			 			  ) 			) 		) 		else false)) AND (exists folder (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications\Config"))) AND (( 		 if (version of main gather service < "9.0" )  			then (  		         exist key "HKLM\SOFTWARE\BigFix\BESAPI\Paths" whose( exists value "base" of it) of registry 		    ) 		else true 		))) AND (exists services whose(service name of it = "BESPluginService"))) AND (( 		 if (version of main gather service >= "9.0" )  			then (  		         exists (folder (value "EnterpriseServerFolde
+r" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications")) whose (exists file "MFS.exe" whose (version of it >= "2.0.0.0") of it)  		    ) 		else true 		))) AND (( 		if ( 		     exists (folder (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications")) whose (exists file "MFS.exe" whose (version of it < "2.0.0.0") of it)  		     OR 		     ( 		       exists (folder (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications")) whose (exists file "MFS.exe" whose (version of it >= "2.0.0.0") of it)  		       AND  		       version of main gather service < "9.0"  		     ) 		   ) 			then  				(  				  (exists file (value "EnterpriseClientFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\EnterpriseClient" of registry as string & "BFEncrypt\public.cert")) AND 				  (exists file (value "EnterpriseClientFolder" of key "HKEY_LOCA
+L_MACHINE\SOFTWARE\BigFix\EnterpriseClient" of registry as string & "BFEncrypt\private.pem")) AND 				  (exists value "SOAPUsername" whose (it != "") of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\BESReports" of registry) AND  				  (exists value "SOAPPassword" whose (it != "") of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\BESReports" of registry) AND  				  (exists value "WRHTTP" whose (it != "") of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\BESReports" of registry) AND 				  (exists value "SOAPPasswordIsEncrypted" whose (it != "") of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\BESReports" of registry) AND 				  (exists value "PlatformUsername" whose (it != "") of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\BESReports" of registry) AND  				  (exists value "PlatformPassword" whose (it != "") of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\BESReports" of registry) AND 				  (exists value "PlatformPasswordIsEncrypted" of key "H
+KEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\BESReports" of registry)  				) 		  		else if ( 				  exists (folder (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications")) whose (exists file "MFS.exe" whose (version of it >= "2.0.0.0") of it)  				  AND  				  version of main gather service >= "9.0" 				)  			then  				( 					(exists value "RESTUsername" of  key "HKLM\SOFTWARE\BigFix\Enterprise Server\MFSConfig"  of registry ) AND 					(exists value "RESTPassword" of  key "HKLM\SOFTWARE\BigFix\Enterprise Server\MFSConfig"  of registry ) AND  					(exists value "RESTURL" of  key "HKLM\SOFTWARE\BigFix\Enterprise Server\MFSConfig" of registry ) 				)  		 		else false 		))]]></relevance>
+				<action-script mime-type="application/x-Fixlet-Windows-Shell"><![CDATA[
+			
+prefetch Server-Automation-PlanEngine-build-9.1.132-win.zip sha1:ca4e717c3e5499924e4ca652bccc8b208567cc69 size:98526316 http://mango.hursley.ibm.com:8000/tpmdev/iemfsa/build/Server-Automation-PlanEngine-build-9.1.132-win.zip sha256:753c1735c2f1d3373dc24460763bda07db677f6f347a099ad42acdb3145fedba
+
+prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe utility __Download\unzip.exe sha256:8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a        
+
+// Path to Applications folder under BES Server
+parameter "AppsFolder" = "{pathname of (folder (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications"))}"
+
+// Path to Applications folder under BES Server with double backslash escapes.
+parameter "AppFolderEscd" = "{escapes of pathname of (folder (value "EnterpriseServerFolder" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server" of registry as string & "Applications"))}"
+
+// Path to existing PlanEngine installation (if any) under Applications folder
+parameter "PeFolder" = "{parameter "AppsFolder" & "\PlanEngine"}"
+
+// Folder to use for backing up user-modified content that should persist over upgrade.
+parameter "BackupFolder" = "{parameter "AppsFolder" & "\pe-upgrade-tmp"}"
+
+// Path to PlanEngine.xml
+parameter "pe_xml" = "{parameter "AppsFolder" & "\Config\PlanEngine.xml"}"
+
+// PID file to be written
+parameter "pe_pids" = "{parameter "AppsFolder" & "\pe-pids.txt"}"
+
+// Stop Plug-in service
+if { exists service "BESPluginService" and state of service "BESPluginService" is "Running" }
+	waithidden cmd.exe /C net stop "BESPluginService"
+endif
+
+//
+// *** BACKUP ***
+//
+
+delete __createfile
+delete backup.bat
+createfile until END_BACKUP_BAT
+@echo off
+pushd        "{ parameter "AppsFolder"   }"
+rmdir /S /Q  "{ parameter "BackupFolder" }"
+mkdir        "{ parameter "BackupFolder" }"
+
+if exist "{parameter "PeFolder" & "\peKeyStore.jks"}" (
+    copy /Y  "{parameter "PeFolder" & "\peKeyStore.jks"}" "{parameter "BackupFolder"}"
+)
+
+if exist "{parameter "PeFolder" & "\config\config.xml"}" (
+	copy /Y "{parameter "PeFolder" }\config\config.xml" "{parameter "BackupFolder"}"
+)
+if exist "{parameter "PeFolder" & "\config\log4j.prop"}" (
+	copy /Y "{parameter "PeFolder" }\config\log4j.prop" "{parameter "BackupFolder"}"
+)
+popd
+END_BACKUP_BAT
+move __createfile backup.bat
+waithidden backup.bat
+delete backup.bat
+
+//
+// *** REMOVE ***
+//
+
+// Check for a PE JRE instance
+delete __createfile
+delete check_pid.vbs
+delete "{ parameter "pe_pids" }"
+createfile until END_CHECK_PID_VBS
+Option Explicit
+
+Dim strComputer
+Dim objWMIService
+Dim pEngProcList, pEngProc
+Dim objFSO
+Dim objTextFile
+Dim strFilePath
+
+strFilePath = "{parameter "pe_pids"}"
+strComputer = "."
+
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Set objTextFile = objFSO.CreateTextFile(strFilePath, True)
+Set objWMIService = GetObject("winmgmts:" _
+    & "{{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+Set pEngProcList = objWMIService.ExecQuery("SELECT * FROM Win32_Process WHERE ExecutablePath = '{parameter "AppFolderEscd" & "\\PlanEngine\\jre\\jre\\bin\\java.exe" }'")
+
+if pEngProcList.count <> 0 then
+   for each pEngProc in pEngProcList
+      objTextFile.Write(pEngProc.ProcessId)
+   next
+end if
+
+objTextFile.Close
+END_CHECK_PID_VBS
+move __createfile check_pid.vbs
+waithidden cmd.exe /C cscript.exe /B /Nologo check_pid.vbs 
+
+if { exists file (parameter "pe_pids") and exists line 1 of file (parameter "pe_pids") }
+delete __createfile
+delete pe_shutdown.bat
+createfile until END_PE_SHUTDOWN_BAT
+@echo off
+pushd "{ parameter "AppsFolder" }"
+if exist Config\PlanEngine.xml (
+	erase /F /Q Config\PlanEngine.xml
+	set /A count = 0
+	:WAIT_PE_SHUTDOWN
+	if exist PlanEngine\pe.shutdown (
+		goto END_OKAY
+	)
+	if "%count%" == "10" (
+		goto END_MAX_TRIES
+	)
+	timeout /nobreak /t 10 >NUL 2>NUL
+	set /A count = "%count% + 1"
+	goto WAIT_PE_SHUTDOWN
+)
+:END_MAX_TRIES
+:END_OKAY
+popd
+END_PE_SHUTDOWN_BAT
+move __createfile pe_shutdown.bat
+waithidden cmd.exe /C pe_shutdown.bat
+delete pe_shutdown.bat
+endif
+
+// Clean up pe_pids
+if { exists file ( parameter "pe_pids" ) } 
+	delete "{ parameter "pe_pids" }"
+endif
+
+// Remove PlanEngine.xml so that we can create it anew
+if { exists file ( parameter "pe_xml" ) }
+	delete "{ parameter "pe_xml" }"
+endif
+
+// Kill any stray PE java.exe that didn't shut down by itself.
+delete __createfile
+delete pe_kill.vbs
+createfile until PE_KILL_VBS
+Option Explicit
+
+Dim strComputer
+Dim objWMIService
+Dim pEngProcList, pEngProc
+
+strComputer = "."
+
+Set objWMIService = GetObject("winmgmts:" _
+    & "{{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+Set pEngProcList = objWMIService.ExecQuery("SELECT * FROM Win32_Process WHERE ExecutablePath = '{parameter "AppFolderEscd" & "\\PlanEngine\\jre\\jre\\bin\\java.exe" }'")
+
+if pEngProcList.count <> 0 then
+   for each pEngProc in pEngProcList
+      pEngProc.Terminate()
+   next
+end if
+PE_KILL_VBS
+move __createfile pe_kill.vbs
+waithidden cmd.exe /C cscript.exe /B /Nologo pe_kill.vbs
+delete pe_kill.vbs
+
+
+// Remove old PE installation directory.
+delete __createfile
+delete pe_delete.bat
+createfile until END_PE_DELETE_BAT
+@echo off
+pushd "{ parameter "AppsFolder" }"
+timeout /nobreak /t 5 >NUL 2>NUL
+if exist PlanEngine (
+	rmdir  /S /Q PlanEngine
+)
+popd
+END_PE_DELETE_BAT
+move __createfile pe_delete.bat
+waithidden cmd.exe /C pe_delete.bat
+delete pe_delete.bat
+
+// Start MFS in case we abort on any of the following predicates
+if { exists service "BESPluginService" and state of service "BESPluginService" is not "Running" }
+	waithidden cmd.exe /C net start "BESPluginService"
+endif
+
+// Assert un-install was successful.
+continue if { not exists folder ( parameter "PeFolder" ) }
+continue if { not exists file   ( parameter "pe_xml"   ) }
+continue if { exists service "BESPluginService" and state of service "BESPluginService" is "Running" }
+
+//
+// *** INSTALL ***
+//
+
+// Stop the Plug-in service for install
+if { exists service "BESPluginService" and state of service "BESPluginService" is "Running" }
+	waithidden cmd.exe /C net stop "BESPluginService"
+endif
+// Assert that the plug-in service has stopped - to prevent half-installed PE start up attempts.
+continue if { exists service "BESPluginService" and state of service "BESPluginService" is not "Running" }
+
+folder create "{parameter "PeFolder"}"
+continue if { exists folder ( parameter "PeFolder" ) }
+waithidden __Download\unzip.exe -qq -o -d "{parameter "PeFolder"}" __Download\Server-Automation-PlanEngine-build-9.1.132-win.zip" 
+
+// Write PlanEngine configuration file for BES Plug-in Service/MFS.
+delete __createfile
+delete "{ parameter "pe_xml" }"
+createfile until END_PE_XML
+<?xml version="1.0"?>
+<BESPluginRegistration>
+	<Name>PlanEngine</Name>
+	<Command>"{parameter "PeFolder" & "\bin\planengine.bat"}"</Command>
+	<Schedule>
+		<WaitPeriodSeconds>30</WaitPeriodSeconds>
+	</Schedule>
+	<ForceKill>true</ForceKill>
+</BESPluginRegistration>
+END_PE_XML
+if { exists file ( parameter "pe_xml" ) }
+	delete "{parameter "pe_xml"}"
+endif
+move "__createfile" "{parameter "pe_xml"}"
+delete __createfile
+
+
+// 
+// *** RESTORE ****
+//
+
+// Restore (merge) user-modified content if any was backed up (upgrade mode only).
+
+if { exists folder ( parameter "BackupFolder" ) }
+delete __createfile
+delete restore.bat
+createfile until END_RESTORE_BAT
+@echo off
+pushd "{ parameter "AppsFolder" }"
+if not exist "{ parameter "PeFolder"}" (
+	goto EXIT_ERROR
+)
+if exist "{parameter "BackupFolder"}" (
+	if exist "{parameter "BackupFolder" & "\config.xml"}" (
+		cscript.exe /B /Nologo PlanEngine\bin\merge-config.js "{parameter "BackupFolder" & "\config.xml"}"  "{parameter "PeFolder" & "\config\config.xml"}" > "{parameter "BackupFolder" & "\config-merged.xml"}"    
+		move /Y "{parameter "BackupFolder" & "\config-merged.xml"}" "{parameter "PeFolder" & "\config\config.xml"}"
+	)
+	if exist "{parameter "BackupFolder" & "\log4j.prop"}" (
+		move /Y "{parameter "BackupFolder" & "\log4j.prop"}"  "{parameter "PeFolder" & "\config"}"
+	)
+	if exist "{parameter "BackupFolder" & "\peKeyStore.jks"}" (
+	    move /Y  "{parameter "BackupFolder" & "\peKeyStore.jks"}" "{parameter "PeFolder" }"
+	)
+	rmdir /S /Q "{parameter "BackupFolder"}"
+)
+:EXIT_ERROR
+:EXIT_OKAY
+popd
+END_RESTORE_BAT
+move __createfile restore.bat
+waithidden cmd.exe /C restore.bat
+endif
+
+// Update config.xml : if we are running BES 8.2 on a Windows server set rest to false ( use the COM API )
+// else we switch to use the REST API - We need to do both these here as the config is backed up during install
+// so REST may be disabled in the case of an upgrade.
+if { version of main gather service < "9" as version }
+	parameter "RestEnabled" = "false"
+else
+	parameter "RestEnabled" = "true"	
+endif
+
+waithidden cmd.exe /C cscript.exe /B /Nologo "{ parameter "PeFolder" & "\bin\update-config.js" }" "{ parameter "PeFolder" & "\config\config.xml" }" rest.api.enabled {parameter "RestEnabled"} > config-new.tmp 2> update-config.err
+continue if { not exists file "update-config.err" or not exists line 1 of file "update-config.err" }
+if { exists file "config-new.tmp" }
+		waithidden cmd.exe /C copy /Y config-new.tmp "{ parameter "PeFolder" & "\config\config.xml" }"
+endif
+	
+
+// Start BES Plug-in service, which will start newly installed PE.
+if { exists service "BESPluginService" and state of service "BESPluginService" is not "Running" }
+	waithidden cmd.exe /C net start "BESPluginService"
+endif
+
+// Assert install/upgrade was successful.
+continue if { exists folder ( parameter "PeFolder" ) }
+continue if { exists file   ( parameter "pe_xml"   ) }
+continue if { exists service "BESPluginService" and state of service "BESPluginService" is "Running" }
+// PE Installation or upgrade complete.
+
+]]></action-script>
+				<success type="RunToCompletion"/>
+			</fixlet>
+		</step>
+		<step id="3">
+			<fixlet fixlet-id="1" site-url="http://sync.bigfix.com/cgi-bin/bfgather/softwaredistribution" name="TEM%20Server%3A%20Register%20Download%20Plug-in%20for%20Software%20Distribution" action-name="Action1" modification-time="Wed, 10 Sep 2014 15:04:46 +0100">
+				<relevance><![CDATA[(((((((if exists property "in proxy agent context" then ( not in proxy agent context ) else true )AND (if exists property "android" of type "operating system" then ( not android of operating system ) else true )) AND (exists relay service OR exists main gather service)) AND ((if exists property "in proxy agent context" then ( not in proxy agent context ) else true )AND (if exists property "android" of type "operating system" then ( not android of operating system ) else true ))) AND (exists main gather service)) AND (version of client >= "8")) AND (if (name of operating system starts with "Win") then (not exists key "HKLM\SOFTWARE\BigFix\BigFix Server\Download Plugins" whose (value "SWDProtocol" of it = 1) of x32 registry) else true)) AND (if (name of operating system contains "Linux") then (not(exists setting "SWD_PluginInstalled" of it and exists value whose (it="1") of setting "SWD_PluginInstalled" of it) of client) else true)]]></relevance>
+				<action-script mime-type="application/x-Fixlet-Windows-Shell"><![CDATA[if {name of operating system starts with "Win"}
+
+parameter "UploadsDir"="{value of setting "_BESRelay_HTTPServer_ServerRootPath" of client}\Uploads"
+parameter "MirrorDir"="{( value "StoragePath" of key "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\GlobalOptions" of registry ) as string & "Mirror Server\"}"
+parameter "PluginFolder"="{value "EnterpriseServerFolder" of key "HKLM\SOFTWARE\BigFix\Enterprise Server" of x32 registry}\DownloadPlugins\SWDProtocol"
+parameter "PluginEXE"="{parameter "PluginFolder" of action}\SWDDownloadPlugin.exe"
+
+// Create the plugin directory if it does not exist
+createfile until __endmsg__
+mkdir "{parameter "PluginFolder" of action}\logs"
+__endmsg__
+delete makePluginFolder.bat
+move __createfile makePluginFolder.bat
+waithidden makePluginFolder.bat
+
+// Download the plugin
+prefetch SWDDownloadPlugin.exe sha1:acf6f301be52e95e8ccab8a45ec16286a2df3239 size:2953312 http://software.bigfix.com/download/bes/util/SWDDownloadPlugin-1.3.1.exe sha256:06997bbf5bb477506e8645e98c48683d06060e29bbfb156390af1ba523044213
+
+delete "{parameter "PluginEXE" of action}"
+move "__Download\SWDDownloadPlugin.exe" "{parameter "PluginEXE" of action}"
+
+// Create plugin.conf
+createfile until __endmsg__
+[Logger]
+verbose              = 1
+logfile              = logs/SWDDownloadPlugin.log
+timestampLogfile     = 1
+timestampMsgs        = 1
+debug                = 2
+maxAgeLogFiles       = 14
+maxSizeLogFiles      = 52428800
+
+[UA]
+uaIfaceType          = 0
+fileRepository       = {parameter "UploadsDir" of action}
+__endmsg__
+delete "{parameter "PluginFolder"}\plugin.ini"
+move __createfile "{parameter "PluginFolder"}\plugin.ini"
+
+// Create registration message
+createfile until __endmsg__
+{
+   "message" : "add",
+   "protocol" : "SWDProtocol",
+   "location" : "{concatenation "\\" of substrings separated by "\" of (parameter "PluginEXE" of action)}"
+}
+__endmsg__
+
+// Drop the message in the server's inbox
+delete "{parameter "MirrorDir" & "Inbox\plugin_SWDProtocol"}"
+move __createfile "{parameter "MirrorDir" & "Inbox\plugin_SWDProtocol"}"
+
+// Add a key for this protocol to the registry
+regset "[HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\BigFix Server\Download Plugins]" "SWDProtocol"=dword:00000001
+
+elseif {name of operating system contains "Linux"}
+
+parameter "UploadsDir"="{key "wwwRootFolder" of section "Software\BigFix\Enterprise Server" of file "/var/opt/BESServer/besserver.config" }/Uploads/"
+parameter "MirrorDir"="{key "StoragePath" of section "Software\BigFix\Enterprise Server\GlobalOptions" of file "/var/opt/BESServer/besserver.config" }/Mirror Server/"
+parameter "PluginFolder"="{key "StoragePath" of section "Software\BigFix\Enterprise Server\GlobalOptions" of file "/var/opt/BESServer/besserver.config" }/DownloadPlugins/SWDProtocol"
+parameter "PluginEXE"="{parameter "PluginFolder" of action}/SWDDownloadPlugin"
+
+// Create the plugin directory if it does not exist
+createfile until __endmsg__
+mkdir -p "{concatenation "/" of substrings separated by "//" of (parameter "PluginFolder" of action)}/logs"
+__endmsg__
+delete makePluginFolder.sh
+move __createfile makePluginFolder.sh
+wait /bin/sh makePluginFolder.sh
+
+// Download the plugin
+prefetch SWDDownloadPlugin sha1:9c174dd180f8bc13eb4ae3f3a50d60ee7299b886 size:2010868 http://software.bigfix.com/download/bes/swd/SWDDownloadPlugin-1.3.1 sha256:2ca4baf295a316c576015146da9a744307ed4e8a23986502f566ef48dc102d86
+
+delete "{parameter "PluginEXE" of action}"
+move "__Download/SWDDownloadPlugin" "{concatenation "/" of substrings separated by "//" of (parameter "PluginEXE" of action)}"
+
+// Make the download plugin executable
+createfile until __endmsg__
+chmod 777 "{concatenation "/" of substrings separated by "//" of (parameter "PluginEXE" of action)}"
+__endmsg__
+delete chmodPlugin.sh
+move __createfile chmodPlugin.sh
+wait /bin/sh chmodPlugin.sh
+
+// Create plugin.conf
+createfile until __endmsg__
+[Logger]
+verbose              = 1
+logfile              = logs/SWDDownloadPlugin.log
+timestampLogfile     = 1
+timestampMsgs        = 1
+debug                = 2
+maxAgeLogFiles       = 14
+maxSizeLogFiles      = 52428800
+
+[UA]
+uaIfaceType          = 0
+fileRepository       = {concatenation "/" of substrings separated by "//" of (parameter "UploadsDir" of action)}
+__endmsg__
+delete "{concatenation "/" of substrings separated by "//" of (parameter "PluginFolder")}/plugin.ini"
+move __createfile "{concatenation "/" of substrings separated by "//" of (parameter "PluginFolder")}/plugin.ini"
+
+// Create registration message
+createfile until __endmsg__
+{
+   "message" : "add",
+   "protocol" : "SWDProtocol",
+   "location" : "{concatenation "/" of substrings separated by "//" of (parameter "PluginEXE" of action)}"
+}
+__endmsg__
+
+// Drop the message in the server's inbox
+delete "{concatenation "/" of substrings separated by "//" of (parameter "MirrorDir" & "inbox/plugin_SWDProtocol")}"
+move __createfile "{concatenation "/" of substrings separated by "//" of (parameter "MirrorDir" & "inbox/plugin_SWDProtocol")}"
+
+
+// Add a client setting for this protocol
+setting "SWD_PluginInstalled"="1" on "{now}" for client
+
+endif
+]]></action-script>
+				<success type="RunToCompletion"/>
+			</fixlet>
+		</step>
+	</plan-steps>
+	<execution-order>
+		<step id="3" depends="2">
+			<on-failure action="StopPlan" targets="IncludeFailed" threshold="0"/>
+		</step>
+		<step id="1" depends="">
+			<on-failure action="StopPlan" targets="IncludeFailed" threshold="0"/>
+		</step>
+		<step id="2" depends="1">
+			<on-failure action="StopPlan" targets="IncludeFailed" threshold="0"/>
+		</step>
+	</execution-order>
+</plan>

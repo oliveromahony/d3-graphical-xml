@@ -1,0 +1,28 @@
+{
+  "name": "RichUI",
+  "version": "0.0.1",
+  "authors": [
+    "Oliver O'Mahony <oliveromahony+github@gmail.com>"
+  ],
+  "description": "A description",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angularjs": "~1.2.24",
+    "d3": "~3.4.11",
+    "bootstrap": "~3.2.0",
+    "jquery": "~2.1.1",
+    "angular": "~1.2.24",
+    "angular-route": "~1.2.24",
+    "font-awesome": "~4.2.0",
+    "angular-resource": "~1.2.24",
+  }
+}
